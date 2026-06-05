@@ -28,6 +28,7 @@ vi.mock("../config.js", () => {
   return {
     config: {
       ALLOWED_DOMAINS: ["react.dev"],
+      MAX_DEPTH: 2,
     },
   };
 });
@@ -95,5 +96,29 @@ describe("Worker Pipeline", () => {
     expect(mockMarkFailed).toHaveBeenCalledTimes(1);
     expect(mockMarkFailed).toHaveBeenCalledWith(42, "Network Error");
     expect(mockMarkDone).not.toHaveBeenCalled();
+  });
+
+  it("should discard links that exceed MAX_DEPTH", async () => {
+    mockDownloadPage.mockResolvedValue({
+      url: "https://react.dev/docs",
+      html: "<html>...</html>",
+      statusCode: 200,
+    });
+
+    mockExtractPageData.mockReturnValue({
+      title: "React Docs",
+      description: "Learn React",
+      canonicalUrl: "https://react.dev/docs",
+      headings: { h1: ["Docs"], h2: [], h3: [] },
+      textContent: "Learn React content",
+      links: ["/tutorial"],
+    });
+
+    // Run with current depth = 2, so nextDepth = 3 which exceeds MAX_DEPTH = 2
+    await processPage({ id: 42, url: "https://react.dev/docs", depth: 2 });
+
+    expect(mockMarkDone).toHaveBeenCalledTimes(1);
+    expect(mockInsertURL).not.toHaveBeenCalled();
+    expect(mockInsertLink).not.toHaveBeenCalled();
   });
 });

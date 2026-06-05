@@ -68,6 +68,12 @@ export async function processPage(urlRow: { id: number; url: string; depth: numb
 
     for (const normalizedLink of uniqueNormalizedLinks) {
       const nextDepth = currentDepth + 1;
+
+      // Enforce MAX_DEPTH limit
+      if (nextDepth > config.MAX_DEPTH) {
+        continue;
+      }
+
       const targetDomain = getDomain(normalizedLink)!;
 
       // Insert target URL (ON CONFLICT DO NOTHING) and get its ID
