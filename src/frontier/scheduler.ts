@@ -1,5 +1,5 @@
 import { config } from "../config.js";
-import { claimNextURL } from "../db/queries.js";
+import { claimNextURL, getGlobalStats } from "../db/queries.js";
 import { getPendingDomains } from "./frontier.js";
 import { processPage } from "../worker/worker.js";
 import { startProgressLogger, stopProgressLogger } from "./logger.js";
@@ -24,6 +24,17 @@ export async function startScheduler(): Promise<void> {
   await startProgressLogger();
 
   while (isRunning) {
+    // Enforce MAX_PAGES limit
+    try {
+      const stats = await getGlobalStats();
+      if (stats.done + stats.failed >= config.MAX_PAGES) {
+        console.log(`Reached MAX_PAGES limit (${config.MAX_PAGES}). Stopping crawler.`);
+        break;
+      }
+    } catch (err) {
+      console.error("Error checking MAX_PAGES limit:", err);
+    }
+
     // 1. Enforce worker concurrency limit
     if (activeWorkers >= config.WORKER_COUNT) {
       await sleep(50);

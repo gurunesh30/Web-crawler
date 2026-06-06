@@ -9,9 +9,7 @@ function isDomainAllowed(domain: string): boolean {
   if (!config.ALLOWED_DOMAINS || config.ALLOWED_DOMAINS.length === 0) {
     return true;
   }
-  return config.ALLOWED_DOMAINS.some(
-    (allowed) => domain === allowed || domain.endsWith("." + allowed)
-  );
+  return config.ALLOWED_DOMAINS.includes(domain);
 }
 
 /**

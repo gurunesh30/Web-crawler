@@ -6,6 +6,7 @@ vi.mock("../config.js", () => {
     config: {
       WORKER_COUNT: 2,
       CRAWL_DELAY_MS: 1000,
+      MAX_PAGES: 100,
     },
   };
 });
@@ -13,6 +14,7 @@ vi.mock("../config.js", () => {
 vi.mock("../db/queries.js", () => {
   return {
     claimNextURL: vi.fn(),
+    getGlobalStats: vi.fn().mockResolvedValue({ pending: 0, fetching: 0, done: 0, failed: 0 }),
   };
 });
 
