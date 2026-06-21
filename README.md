@@ -16,7 +16,7 @@ Configure the crawler by placing a `.env` file in the root directory. The config
 - `MAX_DEPTH`: The maximum distance in link traversals from the seed URLs.
 - `CRAWL_DELAY_MS`: The politeness delay enforced between requests to the same domain.
 - `WORKER_COUNT`: The number of concurrent workers executing requests.
-- `DATABASE_URL`: Connection string for the PostgreSQL database.
+- `DATABASE_URL`: Connection string for the PostgreSQL database...
 
 ## Database Initialization
 
